@@ -6,17 +6,26 @@ import PackageDescription
 let package = Package(
     name: "SwiftyGum",
     dependencies: [
-        .package(url: "https://github.com/kylef/Commander.git", from: Version(0, 0, 0)),
+        .package(url: "https://github.com/kylef/Commander.git", from: "0.0.0"),
+        .package(url: "https://github.com/yanagiba/swift-ast.git", from: "0.19.9"),
     ],
     targets: [
         .target(
-            name: "SwiftyGum",
-            dependencies: ["Commander", "SwiftyGumCore"]),
-        .target(
             name: "SwiftyGumCore",
-            dependencies: []),
+            dependencies: [
+                .product(name: "SwiftAST+Tooling", package: "swift-ast")
+            ]
+        ),
+        .target(
+            name: "SwiftyGumCLI",
+            dependencies: [
+                "Commander",
+                "SwiftyGumCore",
+            ]
+        ),
         .testTarget(
             name: "SwiftyGumTests",
-            dependencies: ["SwiftyGum"]),
-    ]
+            dependencies: ["SwiftyGumCore"]),
+    ],
+    swiftLanguageVersions: [.v5]
 )

@@ -18,6 +18,15 @@
           "revision": "f14ff47f45642aa5703900980b014c2e9394b6e5",
           "version": "0.9.0"
         }
+      },
+      {
+        "package": "swift-ast",
+        "repositoryURL": "https://github.com/yanagiba/swift-ast.git",
+        "state": {
+          "branch": null,
+          "revision": "e8507d78b32dbd33ea5ea975bbbc82b7613870a1",
+          "version": "0.19.9"
+        }
       }
     ]
   },
