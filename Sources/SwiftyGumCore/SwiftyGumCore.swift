@@ -11,8 +11,8 @@ open class SwifityGumCore {
         printTree(dstTree)
     }
 
-    func printTree(_ tree: Node) {
-        print(tree.original.description)
-        tree.children.forEach { printTree($0) }
+    func printTree(_ tree: Node, indent: Int = 0) {
+        print("\(String(repeating: " ", count: 2 * indent))\(tree.label): \(tree.value ?? "")")
+        tree.children.forEach { printTree($0, indent: indent + 1) }
     }
 }

@@ -1,5 +1,5 @@
 class Hoge {
-    func hoge(_ string: String) {
+    private func hoge(_ string: String) {
         print(string.count)
     }
 }
