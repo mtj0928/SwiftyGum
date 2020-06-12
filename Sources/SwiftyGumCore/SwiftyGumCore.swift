@@ -1,30 +1,18 @@
 import Foundation
-import AST
-import Parser
-import Source
+import SwiftSyntax
 
 open class SwifityGumCore {
 
-    public init(src: String, dst: String) {
-        do {
-            let sourceFile = try SourceReader.read(at: src)
-            let parser = Parser(source: sourceFile)
-            let topLevelDecl = try parser.parse()
-            let visitor = Visitor()
-            _ = try visitor.traverse(topLevelDecl)
-        } catch {
-            print(error.localizedDescription)
-        }
+    public init(srcUrl: URL, dstUrl: URL) throws {
+        let srcTree = try TreeGenerator.create(filePath: srcUrl)
+        printTree(srcTree)
+
+        let dstTree = try TreeGenerator.create(filePath: dstUrl)
+        printTree(dstTree)
     }
-}
 
-class Visitor: ASTVisitor {
-
-    func visit(_ node: FunctionDeclaration) throws -> Bool {
-        print("position: \(node.sourceLocation.line) \(node.sourceLocation.column)")
-        print(node.textDescription)
-
-
-        return true
+    func printTree(_ tree: Node) {
+        print(tree.original.description)
+        tree.children.forEach { printTree($0) }
     }
 }

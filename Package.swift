@@ -7,20 +7,20 @@ let package = Package(
     name: "SwiftyGum",
     dependencies: [
         .package(url: "https://github.com/kylef/Commander.git", from: "0.0.0"),
-        .package(url: "https://github.com/yanagiba/swift-ast.git", from: "0.19.9"),
+        .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50200.0")),
     ],
     targets: [
-        .target(
-            name: "SwiftyGumCore",
-            dependencies: [
-                .product(name: "SwiftAST+Tooling", package: "swift-ast")
-            ]
-        ),
         .target(
             name: "SwiftyGumCLI",
             dependencies: [
                 "Commander",
                 "SwiftyGumCore",
+            ]
+        ),
+        .target(
+            name: "SwiftyGumCore",
+            dependencies: [
+                "SwiftSyntax",
             ]
         ),
         .testTarget(

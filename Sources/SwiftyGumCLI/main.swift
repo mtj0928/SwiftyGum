@@ -3,10 +3,10 @@ import Commander
 import Foundation
 
 let main = command(
-    Argument<String>("src"),
-    Argument<String>("dst")
+    Argument<URL>("src"),
+    Argument<URL>("dst")
 ) { src, dst in
-    let core = SwifityGumCore(src: src, dst: dst)
+    let core = try! SwifityGumCore(srcUrl: src, dstUrl: dst)
 }
 
 main.run()
