@@ -1,22 +1,5 @@
 import SwiftSyntax
 
-extension Syntax {
-    var label: String {
-        var syntax = "\(customMirror.subjectType)"
-        if syntax.hasSuffix("Syntax") {
-            syntax = String(syntax.dropLast(6))
-        }
-        return syntax
-    }
-
-    var token: String? {
-        guard self.isToken else {
-            return nil
-        }
-        return self.as(TokenSyntax.self)?.text
-    }
-}
-
 class Node {
     let id: SyntaxIdentifier
     let label: String
@@ -47,6 +30,8 @@ extension Node: Hashable {
 extension Node {
 
     func same(with node: Node) -> Bool {
-        return true
+        return self.id == node.id
+            && self.label == node.label
+            && self.value == node.value
     }
 }
