@@ -1,0 +1,3 @@
+struct EditScript {
+    let action
+}
