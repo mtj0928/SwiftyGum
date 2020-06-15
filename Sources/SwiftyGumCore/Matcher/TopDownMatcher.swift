@@ -17,22 +17,10 @@ struct TopDownMathcher: Matcher {
             for candidate in candidates {
                 if let mappings = srcNode.isomorphism(with: candidate) {
                     mappings.forEach { mappingStore.link($0) }
-                    print("----Mathced----")
-                    candidate.printTree()
                     continue
                 }
             }
         }
         return mappingStore
-    }
-
-    private func createLabelToNodes(from node: Node) -> [String: [Node]] {
-        return node.descents.reduce([:]) { (dict, node) -> [String: [Node]] in
-            var dict = dict
-            var nodes = dict[node.label] ?? []
-            nodes.append(node)
-            dict[node.label] = nodes
-            return dict
-        }
     }
 }

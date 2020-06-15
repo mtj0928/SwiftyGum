@@ -6,6 +6,8 @@ class TreeGenerator {
         let source = try SyntaxParser.parse(filePath)
         let visitor = Visitor()
         visitor.walk(source)
-        return visitor.rootNode
+        let root = visitor.rootNode!
+        root.updateHeight()
+        return root
     }
 }

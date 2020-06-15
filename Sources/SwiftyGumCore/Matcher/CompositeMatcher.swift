@@ -4,7 +4,8 @@ struct CompositeMatcher: Matcher {
 
     func match(src: Node, dst: Node, mappingStore: MappingStore) -> MappingStore {
         let topDownMatcher = TopDownMathcher()
-        var mappingStore = topDownMatcher.match(src: src, dst: dst, mappingStore: mappingStore)
-        return mappingStore
+        let mappingStore = topDownMatcher.match(src: src, dst: dst, mappingStore: mappingStore)
+        let bottomUpMatcher = BottomUpMatcher()
+        return bottomUpMatcher.match(src: src, dst: dst, mappingStore: mappingStore)
     }
 }

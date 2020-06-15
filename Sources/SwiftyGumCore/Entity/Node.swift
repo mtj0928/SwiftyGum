@@ -7,6 +7,8 @@ class Node {
     let original: Syntax
     let parent: Node?
     var children: [Node] = []
+    private(set) var height = 0
+    private(set) var distanceFromRoot = 0
 
     init(id: SyntaxIdentifier, original: Syntax, parent: Node?) {
         self.id = id
@@ -23,9 +25,7 @@ extension Node: Hashable {
     }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(label)
-        hasher.combine(value)
-        hasher.combine(id.hashValue)
+        original.hash(into: &hasher)
     }
 }
 
@@ -69,6 +69,18 @@ extension Node {
 
         results.append(Mapping(src: self, dst: node))
         return results
+    }
+
+    @discardableResult
+    func updateHeight(distanceFromRoot: Int = 0) -> Int {
+        self.distanceFromRoot = distanceFromRoot
+        guard let height = children.map({ $0.updateHeight(distanceFromRoot: distanceFromRoot + 1) }).max() else {
+            // A case when children are empty
+            self.height = 0
+            return 0
+        }
+        self.height = height + 1
+        return self.height
     }
 }
 

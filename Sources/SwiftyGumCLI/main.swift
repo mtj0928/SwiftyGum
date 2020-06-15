@@ -7,7 +7,10 @@ let main = command(
     Argument<URL>("dst")
 ) { src, dst in
     print("Start")
-    let core = try! SwifityGumCore(srcUrl: src, dstUrl: dst)
+    let start = Date()
+    _ = try! SwifityGumCore(srcUrl: src, dstUrl: dst)
+    let elapsed = Date().timeIntervalSince(start)
+    print(elapsed)
 }
 
 main.run()
