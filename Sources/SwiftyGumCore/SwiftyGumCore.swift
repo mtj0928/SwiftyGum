@@ -8,6 +8,6 @@ open class SwifityGumCore {
         let dstTree = try TreeGenerator.create(filePath: dstUrl)
 
         let matcher = CompositeMatcher()
-        _  = matcher.match(src: srcTree, dst: dstTree)
+        let mappingStore  = matcher.match(src: srcTree, dst: dstTree)
     }
 }
