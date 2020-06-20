@@ -10,7 +10,7 @@ let main = command(
     let start = Date()
     _ = try! SwifityGumCore(srcUrl: src, dstUrl: dst)
     let elapsed = Date().timeIntervalSince(start)
-    print(elapsed)
+    print("Time: \(elapsed)")
 }
 
 main.run()

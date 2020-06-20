@@ -14,8 +14,15 @@ struct RecoveryMatcher: Matcher {
                 guard !mappingStore.isMatched(dst: dstChild) else {
                     continue
                 }
-                if srcChild.same(with: dstChild) {
-                    let sim = similarity(srcChild, dstChild, mappingStore: mappingStore)
+
+                if srcChild.label == dstChild.label {
+                    let sim: Double
+                    if srcChild.isLeaf && dstChild.isLeaf {
+                        sim = srcChild.value == dstChild.value ? 1.0 : 0.5
+                    } else {
+                        sim = similarity(srcChild, dstChild, mappingStore: mappingStore)
+                    }
+
                     if sim > maxSim {
                         maxSim = sim
                         maxNode = dstChild

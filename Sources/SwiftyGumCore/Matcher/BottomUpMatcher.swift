@@ -2,7 +2,7 @@ import Foundation
 
 struct BottomUpMatcher: Matcher {
 
-    private let minimumSimilarity: Double = 0.3
+    private let minimumSimilarity: Double = 0.25
 
     func match(src: Node, dst: Node, mappingStore: MappingStore) -> MappingStore {
         let sortedSrcNodes = src.descents.sorted(by: { $0.distanceFromRoot >= $1.distanceFromRoot })
@@ -19,7 +19,7 @@ struct BottomUpMatcher: Matcher {
             var maxNode: Node?
             var max: Double = 0
             for candidate in candidates {
-                if mappingStore.isMatched(dst: candidate) {
+                guard !mappingStore.isMatched(dst: candidate) else {
                     continue
                 }
                 let sim = similarity(node, candidate, mappingStore: mappingStore)

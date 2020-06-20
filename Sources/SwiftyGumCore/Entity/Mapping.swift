@@ -5,6 +5,7 @@ class Mapping {
     let dstNode: Node
 
     init(src: Node, dst: Node) {
+        assert(src.label == dst.label)
         self.srcNode = src
         self.dstNode = dst
     }

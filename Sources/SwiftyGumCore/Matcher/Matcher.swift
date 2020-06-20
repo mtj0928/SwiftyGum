@@ -8,7 +8,7 @@ protocol Matcher {
 extension Matcher {
 
     func match(src: Node, dst: Node) -> MappingStore {
-        return self.match(src: src, dst: dst, mappingStore: MappingStore())
+        return self.match(src: src, dst: dst, mappingStore: MappingStore(srcNode: src, dstNode: dst))
     }
 
     func createLabelToNodes(from node: Node) -> [String: [Node]] {
@@ -26,11 +26,8 @@ extension Matcher {
     }
 
     func similarity(_ nodeA: Node, _ nodeB: Node, mappingStore: MappingStore) -> Double {
-        var nodeADescents = nodeA.descents
-        nodeADescents.removeFirst()
-
-        var nodeBDescents = nodeB.descents
-        nodeBDescents.removeFirst()
+        let nodeADescents = nodeA.descents
+        let nodeBDescents = nodeB.descents
 
         let nodeBSet = Set(nodeBDescents)
         var count: Double = 0

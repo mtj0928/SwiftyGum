@@ -1,5 +1,5 @@
 import Foundation
 
-protocol Calculator {
+protocol EditScriptGenerator {
     func calculate(from mappingStore: MappingStore) -> EditScript
 }

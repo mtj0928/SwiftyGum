@@ -1,23 +1,38 @@
 import SwiftSyntax
 
 class Node {
-    let id: SyntaxIdentifier
+    let id: Int
     let label: String
-    let value: String?
-    let original: Syntax
-    let parent: Node?
+    var value: String?
+    let original: Syntax?
+    var parent: Node?
     var children: [Node] = []
     private(set) var height = 0
     private(set) var distanceFromRoot = 0
+    private(set) lazy var rootNode: Node = { () -> Node in
+        let node = parent?.rootNode
+        return node ?? self
+    }()
+    private var idCounter = 0
 
-    init(id: SyntaxIdentifier, original: Syntax, parent: Node?) {
-        self.id = id
-        self.label = original.label
-        self.value = original.token
+    init(original: Syntax?, parent: Node?) {
+        self.label = original?.label ?? "Unknown"
+        self.value = original?.token
         self.original = original
         self.parent = parent
+        self.id = parent?.newId() ?? 0
+    }
+
+    init(label: String, value: String?, parent: Node?) {
+        self.label = label
+        self.value = value
+        self.original = nil
+        self.parent = parent
+        self.id = parent?.newId() ?? 0
     }
 }
+
+// MARK: - Hashable
 
 extension Node: Hashable {
     static func == (lhs: Node, rhs: Node) -> Bool {
@@ -29,6 +44,8 @@ extension Node: Hashable {
     }
 }
 
+// MARK: - Logic
+
 extension Node {
 
     var descents: [Node] {
@@ -38,6 +55,10 @@ extension Node {
         return nodes
     }
 
+    var isLeaf: Bool {
+        return children.isEmpty
+    }
+
     func same(with node: Node) -> Bool {
         return self.label == node.label
             && self.value == node.value
@@ -45,6 +66,10 @@ extension Node {
 
     @discardableResult
     func isomorphism(with node: Node) -> [Mapping]? {
+        guard height == node.height else {
+            return nil
+        }
+
         var results = [Mapping]()
 
         if children.isEmpty {
@@ -82,12 +107,37 @@ extension Node {
         self.height = height + 1
         return self.height
     }
+
+    func deepCopy() -> Node {
+        return deepCopy(parent: nil)
+    }
+
+    private func deepCopy(parent: Node?) -> Node {
+        let node = Node(original: original, parent: parent)
+        node.height = height
+        node.distanceFromRoot = distanceFromRoot
+        self.children.forEach { child in
+            let child = child.deepCopy(parent: node)
+            node.children.append(child)
+        }
+        return node
+    }
+
+    func newId() -> Int {
+        if parent == nil {
+            idCounter += 1
+            return idCounter
+        }
+        return rootNode.newId()
+    }
 }
+
+// MARK: - Debug
 
 extension Node {
 
     func printTree(indent: Int = 0) {
-        print("\(String(repeating: " ", count: 2 * indent))\(label): \(value ?? "")")
+        print("\(String(repeating: " ", count: 2 * indent))\(id). \(label): \(value ?? "")")
         children.forEach { $0.printTree(indent: indent + 1) }
     }
 }

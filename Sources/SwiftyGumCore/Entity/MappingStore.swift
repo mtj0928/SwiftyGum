@@ -1,20 +1,29 @@
 import Foundation
 
 class MappingStore {
+    let srcRootNode: Node
+    let dstRootNode: Node
     private(set) var pairs = [Mapping]()
     private(set) var srcNodeToDstNode = [Node: Node]()
     private(set) var dstNodeToSrctNode = [Node: Node]()
 
+    init(srcNode: Node, dstNode: Node) {
+        self.srcRootNode = srcNode
+        self.dstRootNode = dstNode
+    }
+
     func link(src: Node, dst: Node) {
-        pairs.append(Mapping(src: src, dst: dst))
-        srcNodeToDstNode[src] = dst
-        dstNodeToSrctNode[dst] = src
+        link(Mapping(src: src, dst: dst))
     }
 
     func link(_ mapping: Mapping) {
         pairs.append(mapping)
         srcNodeToDstNode[mapping.srcNode] = mapping.dstNode
         dstNodeToSrctNode[mapping.dstNode] = mapping.srcNode
+    }
+
+    func isLinked(src: Node, dst: Node) -> Bool {
+        return srcNodeToDstNode[src] == dst
     }
 
     func mathcedDstNode(with srcNode: Node) -> Node? {
