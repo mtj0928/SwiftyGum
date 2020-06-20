@@ -9,12 +9,13 @@ struct ChawatheScriptGenerator: EditScriptGenerator {
     /// Plese check the Figure 8 (Algorithm EditScript) in the paper.
     func generate(from mappingStore: MappingStore) -> EditScript {
         var actions = [EditAction]()
-        let mappingStore = copyMappingStore(from: mappingStore)
-        let copiedSrcRootNode = mappingStore.srcRootNode
-        let copiedDstRootNode = mappingStore.dstRootNode
+        var idToOriginalSrcNode = createIdToOtiginalNode(root: mappingStore.srcRootNode)
+        let copiedMappingStore = copyMappingStore(from: mappingStore)
+        let copiedSrcRootNode = copiedMappingStore.srcRootNode
+        let copiedDstRootNode = copiedMappingStore.dstRootNode
         let orderStore = NodeOrderStore()
 
-        mappingStore.link(src: copiedSrcRootNode, dst: copiedDstRootNode)
+        copiedMappingStore.link(src: copiedSrcRootNode, dst: copiedDstRootNode)
 
         //  valiable names are based on Figure 8.
         //
@@ -36,54 +37,55 @@ struct ChawatheScriptGenerator: EditScriptGenerator {
                 continue
             }
 
-            let z = mappingStore.matchedSrcNode(with: y)!
-            if !mappingStore.isMatched(dst: x) {
-                let pos = findPos(for: x, mappingStore: mappingStore, orderStore: orderStore)
+            let z = copiedMappingStore.matchedSrcNode(with: y)!
+            if !copiedMappingStore.isMatched(dst: x) {
+                let pos = findPos(for: x, mappingStore: copiedMappingStore, orderStore: orderStore)
                 let w = Node(label: x.label, value: x.value, parent: z)
-                let insert = EditAction.insert(node: w, to: z, pos: pos)
+                idToOriginalSrcNode[w.id] = w
+                let insert = EditAction.insert(node: idToOriginalSrcNode[w.id]!, to: idToOriginalSrcNode[z.id]!, pos: pos)
                 actions.append(insert)
                 z.children.insert(w, at: pos)
-                mappingStore.link(src: w, dst: x)
-            } else if let w = mappingStore.matchedSrcNode(with: x),
+                copiedMappingStore.link(src: w, dst: x)
+            } else if let w = copiedMappingStore.matchedSrcNode(with: x),
                 let v = w.parent {
 
                 if w.value != x.value {
-                    let update = EditAction.update(node: w, newValue: x.value)
+                    let update = EditAction.update(node: idToOriginalSrcNode[w.id]!, newValue: x.value)
                     actions.append(update)
                     w.value = x.value
                 }
 
-                if !mappingStore.isLinked(src: v, dst: y) {
-                    let pos = findPos(for: x, mappingStore: mappingStore, orderStore: orderStore)
-                    let move = EditAction.move(node: w, to: z, pos: pos)
+                if !copiedMappingStore.isLinked(src: v, dst: y) {
+                    let pos = findPos(for: x, mappingStore: copiedMappingStore, orderStore: orderStore)
+                    let move = EditAction.move(node: idToOriginalSrcNode[w.id]!, to: idToOriginalSrcNode[z.id]!, pos: pos)
                     actions.append(move)
                     v.children.removeAll { $0 == w }
                     w.parent = z
                     z.children.insert(w, at: pos)
                 }
             }
-            let w = mappingStore.matchedSrcNode(with: x)!
+            let w = copiedMappingStore.matchedSrcNode(with: x)!
             orderStore.orderSrcNodes.insert(w)
             orderStore.orderDstNodes.insert(x)
-            let moves = alignChildren(w: w, x: x, mappingStore: mappingStore, orderStore: orderStore)
+            let moves = alignChildren(w: w, x: x, mappingStore: copiedMappingStore, orderStore: orderStore, idToOriginalSrcNode: idToOriginalSrcNode)
             actions.append(contentsOf: moves)
         }
 
         copiedSrcRootNode.updateHeight()
 
         copiedSrcRootNode.descents
-            .filter { !mappingStore.isMatched(src: $0) }
+            .filter { !copiedMappingStore.isMatched(src: $0) }
             .sorted(by: { $0.height >= $1.height })
             .forEach { node in
                 let delete = EditAction.delete(node: node)
                 actions.append(delete)
                 node.parent?.children.removeAll(where: { $0 == node })
         }
-        return EditScript(action: actions)
+        return EditScript(actions: actions)
     }
 
     /// Plese check the Figure 9 (AlignChildre) in the paper.
-    private func alignChildren(w: Node, x: Node, mappingStore: MappingStore, orderStore: NodeOrderStore) -> [EditAction] {
+    private func alignChildren(w: Node, x: Node, mappingStore: MappingStore, orderStore: NodeOrderStore, idToOriginalSrcNode: [Int: Node]) -> [EditAction] {
         w.children.forEach { orderStore.orderSrcNodes.remove($0) }
         x.children.forEach { orderStore.orderDstNodes.remove($0) }
 
@@ -108,7 +110,7 @@ struct ChawatheScriptGenerator: EditScriptGenerator {
                 if mappingStore.isLinked(src: a, dst: b)
                     && !s.contains(where: { $0 == a && $1 == b }) {
                     let k = findPos(for: b, mappingStore: mappingStore, orderStore: orderStore)
-                    let move = EditAction.move(node: a, to: w, pos: k)
+                    let move = EditAction.move(node: idToOriginalSrcNode[a.id]!, to: idToOriginalSrcNode[w.id]!, pos: k)
                     results.append(move)
                     w.children.removeAll(where: { $0 == a })
                     w.children.insert(a, at: k)
@@ -147,6 +149,15 @@ struct ChawatheScriptGenerator: EditScriptGenerator {
 
 extension ChawatheScriptGenerator {
 
+    func createIdToOtiginalNode(root: Node) -> [Int: Node] {
+        let dict = root.descents.reduce([:]) { (result, node) -> [Int: Node] in
+            var result = result
+            result[node.id] = node
+            return result
+        }
+        return dict
+    }
+
     func copyMappingStore(from mappingStore: MappingStore) -> MappingStore {
         let srcFakeNode = mappingStore.srcRootNode.deepCopy()
         let dstFakeNode = mappingStore.dstRootNode.deepCopy()
@@ -162,7 +173,7 @@ extension ChawatheScriptGenerator {
             }
             coppiedMappingStore.link(Mapping(src: srcNode, dst: dstNode))
         }
-        return mappingStore
+        return coppiedMappingStore
     }
 
     private func createNodeDict(from node: Node) -> [Node: Node] {

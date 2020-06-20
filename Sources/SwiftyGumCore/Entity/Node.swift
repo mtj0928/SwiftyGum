@@ -1,15 +1,15 @@
 import SwiftSyntax
 
-class Node {
-    let id: Int
-    let label: String
-    var value: String?
-    let original: Syntax?
-    var parent: Node?
-    var children: [Node] = []
-    private(set) var height = 0
-    private(set) var distanceFromRoot = 0
-    private(set) lazy var rootNode: Node = { () -> Node in
+open class Node {
+    public let id: Int
+    public let label: String
+    public var value: String?
+    public let original: Syntax?
+    public var parent: Node?
+    public var children: [Node] = []
+    public private(set) var height = 0
+    public private(set) var distanceFromRoot = 0
+    public private(set) lazy var rootNode: Node = { () -> Node in
         let node = parent?.rootNode
         return node ?? self
     }()
@@ -35,11 +35,11 @@ class Node {
 // MARK: - Hashable
 
 extension Node: Hashable {
-    static func == (lhs: Node, rhs: Node) -> Bool {
+    public static func == (lhs: Node, rhs: Node) -> Bool {
         return lhs.id == rhs.id
     }
 
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         original.hash(into: &hasher)
     }
 }
@@ -48,24 +48,24 @@ extension Node: Hashable {
 
 extension Node {
 
-    var descents: [Node] {
+    public var descents: [Node] {
         var nodes = children.map { $0.descents }
             .flatMap { $0 }
         nodes.insert(self, at: 0)
         return nodes
     }
 
-    var isLeaf: Bool {
+    public var isLeaf: Bool {
         return children.isEmpty
     }
 
-    func same(with node: Node) -> Bool {
+    public func same(with node: Node) -> Bool {
         return self.label == node.label
             && self.value == node.value
     }
 
     @discardableResult
-    func isomorphism(with node: Node) -> [Mapping]? {
+    public func isomorphism(with node: Node) -> [Mapping]? {
         guard height == node.height else {
             return nil
         }
@@ -97,7 +97,7 @@ extension Node {
     }
 
     @discardableResult
-    func updateHeight(distanceFromRoot: Int = 0) -> Int {
+    public func updateHeight(distanceFromRoot: Int = 0) -> Int {
         self.distanceFromRoot = distanceFromRoot
         guard let height = children.map({ $0.updateHeight(distanceFromRoot: distanceFromRoot + 1) }).max() else {
             // A case when children are empty
@@ -108,7 +108,7 @@ extension Node {
         return self.height
     }
 
-    func deepCopy() -> Node {
+    public func deepCopy() -> Node {
         return deepCopy(parent: nil)
     }
 
@@ -136,7 +136,7 @@ extension Node {
 
 extension Node {
 
-    func printTree(indent: Int = 0) {
+    public func printTree(indent: Int = 0) {
         print("\(String(repeating: " ", count: 2 * indent))\(id). \(label): \(value ?? "")")
         children.forEach { $0.printTree(indent: indent + 1) }
     }
