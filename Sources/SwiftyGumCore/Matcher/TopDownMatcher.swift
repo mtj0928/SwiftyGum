@@ -9,7 +9,7 @@ struct TopDownMathcher: Matcher {
     func match(src srcTree: Node, dst dstTree: Node, mappingStore: MappingStore) -> MappingStore {
         let dstLabelToNodes = createLabelToNodes(from: dstTree)
 
-        for srcNode in srcTree.descents {
+        for srcNode in srcTree.descents.sorted(by: { $0.height >= $1.height }) {
             // When the parent node is matched, the node (included in the parent node's childlen) is matched.
             // So, skip the node.
             guard srcNode.height >= minHeight,
