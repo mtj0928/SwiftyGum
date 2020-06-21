@@ -27,19 +27,13 @@ extension Matcher {
 
     func similarity(_ nodeA: Node, _ nodeB: Node, mappingStore: MappingStore) -> Double {
         let nodeADescents = nodeA.descents
-        let nodeBDescents = nodeB.descents
+        let nodeBSet = Set(nodeB.descents)
 
-        let nodeBSet = Set(nodeBDescents)
-        var count: Double = 0
-
-        for node in nodeADescents {
-            guard let mappedNode = mappingStore.mathcedDstNode(with: node) else {
-                continue
-            }
-            if nodeBSet.contains(mappedNode) {
-                count += 1
-            }
-        }
-        return Double(count / (Double(nodeADescents.count + nodeBDescents.count) - count))
+        let count = Double(nodeADescents.compactMap { mappingStore.mathcedDstNode(with: $0) }
+            .filter { nodeBSet.contains($0) }
+            .count
+        )
+        let sim = Double(count / (Double(nodeADescents.count + nodeBSet.count) - count))
+        return sim
     }
 }

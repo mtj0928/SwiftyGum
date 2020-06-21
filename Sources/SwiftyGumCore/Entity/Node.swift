@@ -80,17 +80,17 @@ extension Node {
 
         var results = [Mapping]()
 
-        if children.isEmpty {
-            guard node.children.isEmpty, same(with: node) else {
+        if (children.count != node.children.count) {
+            return nil
+        }
+
+        if isLeaf {
+            guard same(with: node) else {
                 return nil
             }
 
             results.append(Mapping(src: self, dst: node))
             return results
-        }
-
-        if (children.count != node.children.count) {
-            return nil
         }
 
         for index in (0..<children.count) {

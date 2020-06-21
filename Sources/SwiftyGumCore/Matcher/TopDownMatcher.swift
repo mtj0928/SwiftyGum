@@ -3,7 +3,8 @@ import SwiftSyntax
 
 struct TopDownMathcher: Matcher {
 
-    let minHeight = 2
+    // 0 means that the node is a leaf.
+    let minHeight = 1
 
     func match(src srcTree: Node, dst dstTree: Node, mappingStore: MappingStore) -> MappingStore {
         let dstLabelToNodes = createLabelToNodes(from: dstTree)

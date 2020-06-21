@@ -31,7 +31,7 @@ private func printEditAction(_ editAction: EditAction) {
     case .delete(let node):
         print("DEL: \(node.string)")
     case .update(let node, let newValue):
-        print("UPD: \(node.string)\tto\t\(newValue ?? "nil")")
+        print("UPD: \(node.string)\tto\t\"\(newValue ?? "nil")\"")
     case .move(let node, let to, let pos):
         print("MOV: \(node.string)\tto\t\(to.string)\tat\t\(pos)")
     }
