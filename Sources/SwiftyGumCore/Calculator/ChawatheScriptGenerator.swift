@@ -15,7 +15,9 @@ struct ChawatheScriptGenerator: EditScriptGenerator {
         let copiedDstRootNode = copiedMappingStore.dstRootNode
         let orderStore = NodeOrderStore()
 
-        copiedMappingStore.link(src: copiedSrcRootNode, dst: copiedDstRootNode)
+        if !copiedMappingStore.isLinked(src: copiedSrcRootNode, dst: copiedDstRootNode) {
+            copiedMappingStore.link(src: copiedSrcRootNode, dst: copiedDstRootNode)
+        }
 
         //  valiable names are based on Figure 8.
         //
