@@ -18,6 +18,8 @@ class MappingStore {
 
     func link(_ mapping: Mapping) {
         pairs.append(mapping)
+        assert(srcNodeToDstNode[mapping.srcNode] == nil)
+        assert(dstNodeToSrctNode[mapping.dstNode] == nil)
         srcNodeToDstNode[mapping.srcNode] = mapping.dstNode
         dstNodeToSrctNode[mapping.dstNode] = mapping.srcNode
     }

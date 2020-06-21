@@ -59,7 +59,7 @@ struct ChawatheScriptGenerator: EditScriptGenerator {
                     let pos = findPos(for: x, mappingStore: copiedMappingStore, orderStore: orderStore)
                     let move = EditAction.move(node: idToOriginalSrcNode[w.id]!, to: idToOriginalSrcNode[z.id]!, pos: pos)
                     actions.append(move)
-                    v.children.removeAll { $0 == w }
+                    v.children.remove(at: w.posionInParent!)
                     w.parent = z
                     z.children.insert(w, at: pos)
                 }
@@ -77,14 +77,17 @@ struct ChawatheScriptGenerator: EditScriptGenerator {
             .filter { !copiedMappingStore.isMatched(src: $0) }
             .sorted(by: { $0.height >= $1.height })
             .forEach { node in
-                let delete = EditAction.delete(node: node)
+                let delete = EditAction.delete(node: idToOriginalSrcNode[node.id]!)
                 actions.append(delete)
-                node.parent?.children.removeAll(where: { $0 == node })
+                node.parent?.children.remove(at: node.posionInParent!)
         }
+
+        copiedSrcRootNode.updateHeight()
+        assert(copiedSrcRootNode.isomorphism(with: copiedDstRootNode) != nil)
         return EditScript(actions: actions)
     }
 
-    /// Plese check the Figure 9 (AlignChildre) in the paper.
+    /// Plese check the Figure 9 (AlignChildren) in the paper.
     private func alignChildren(w: Node, x: Node, mappingStore: MappingStore, orderStore: NodeOrderStore, idToOriginalSrcNode: [Int: Node]) -> [EditAction] {
         w.children.forEach { orderStore.orderSrcNodes.remove($0) }
         x.children.forEach { orderStore.orderDstNodes.remove($0) }
@@ -107,12 +110,16 @@ struct ChawatheScriptGenerator: EditScriptGenerator {
         var results = [EditAction]()
         for a in s1 {
             for b in s2 {
-                if mappingStore.isLinked(src: a, dst: b)
-                    && !s.contains(where: { $0 == a && $1 == b }) {
-                    let k = findPos(for: b, mappingStore: mappingStore, orderStore: orderStore)
+                if mappingStore.isLinked(src: a, dst: b) && !s.contains(where: { $0 == a && $1 == b }) {
+                    var k = findPos(for: b, mappingStore: mappingStore, orderStore: orderStore)
                     let move = EditAction.move(node: idToOriginalSrcNode[a.id]!, to: idToOriginalSrcNode[w.id]!, pos: k)
                     results.append(move)
-                    w.children.removeAll(where: { $0 == a })
+                    let oldK = w.children.firstIndex(of: a)!
+                    if oldK < k {
+                        k -= 1
+                    }
+
+                    w.children.remove(at: a.posionInParent!)
                     w.children.insert(a, at: k)
                     orderStore.orderSrcNodes.insert(a)
                     orderStore.orderDstNodes.insert(b)
@@ -125,7 +132,7 @@ struct ChawatheScriptGenerator: EditScriptGenerator {
     /// Plese check the Figure 9 (FindPos) in the paper.
     private func findPos(for x: Node, mappingStore: MappingStore, orderStore: NodeOrderStore) -> Int {
         guard let y = x.parent else {
-                return 0
+            return 0
         }
 
         guard let vIndex = (0..<y.children.firstIndex(of: x)!)

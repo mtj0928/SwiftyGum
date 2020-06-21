@@ -5,7 +5,7 @@ open class Node {
     public let label: String
     public var value: String?
     public let original: Syntax?
-    public var parent: Node?
+    public weak var parent: Node?
     public var children: [Node] = []
     public private(set) var height = 0
     public private(set) var distanceFromRoot = 0
@@ -48,11 +48,19 @@ extension Node: Hashable {
 
 extension Node {
 
+    var posionInParent: Int? {
+        return parent?.children.firstIndex(of: self)
+    }
+
     public var descents: [Node] {
         var nodes = children.map { $0.descents }
             .flatMap { $0 }
         nodes.insert(self, at: 0)
         return nodes
+    }
+
+    public var isRoot: Bool {
+        parent == nil
     }
 
     public var isLeaf: Bool {

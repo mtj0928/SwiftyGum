@@ -24,7 +24,7 @@ struct TopDownMathcher: Matcher {
 
                 if let mappings = srcNode.isomorphism(with: candidate) {
                     mappings.forEach { mappingStore.link($0) }
-                    continue
+                    break
                 }
             }
         }
