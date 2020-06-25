@@ -1,8 +1,11 @@
 import Foundation
 
 struct BottomUpMatcher: Matcher {
+    private let configuration: SwiftyGumConfiguration
 
-    private let minimumSimilarity: Double = 0.25
+    init(configuration: SwiftyGumConfiguration) {
+        self.configuration = configuration
+    }
 
     func match(src: Node, dst: Node, mappingStore: MappingStore) -> MappingStore {
         let sortedSrcNodes = src.descents.sorted(by: { $0.distanceFromRoot >= $1.distanceFromRoot })
@@ -23,14 +26,14 @@ struct BottomUpMatcher: Matcher {
                     continue
                 }
                 let sim = similarity(node, candidate, mappingStore: mappingStore)
-                if sim > max && sim >= minimumSimilarity {
+                if sim > max && sim >= configuration.simBoder {
                     max = sim
                     maxNode = candidate
                 }
             }
             if let maxNode = maxNode {
                 mappingStore.link(src: node, dst: maxNode)
-                _ = RecoveryMatcher().match(src: node, dst: maxNode, mappingStore: mappingStore)
+                _ = RecoveryMatcher(configuration: configuration).match(src: node, dst: maxNode, mappingStore: mappingStore)
             }
         }
         return mappingStore

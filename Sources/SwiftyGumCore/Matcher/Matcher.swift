@@ -2,6 +2,8 @@ import Foundation
 
 protocol Matcher {
 
+    init(configuration: SwiftyGumConfiguration)
+
     func match(src: Node, dst: Node, mappingStore: MappingStore) -> MappingStore
 }
 

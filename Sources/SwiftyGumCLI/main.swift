@@ -3,12 +3,26 @@ import Commander
 import Foundation
 
 let main = command(
-    Argument<URL>("src"),
-    Argument<URL>("dst")
-) { src, dst in
+    Argument<URL>("src",
+                  description: "Source file (orifinal file)"
+    ),
+    Argument<URL>("dst",
+                  description: "Destination file (editted file)"
+    ),
+    Option<Int>("min-height",
+                default: SwiftyGumConfiguration.Default.minHeight,
+                description: "Minimum height that AST nodes are matched in TopDown Matching"
+    ),
+    Option<Double>("sim-border",
+                   default: SwiftyGumConfiguration.Default.simBorder,
+                   description: "The boundary value that determins two different node should be matched."
+    )
+) { src, dst, minHeight, simBorder in
     let start = Date()
 
-    let editScript = try! SwifityGumCore.exec(srcUrl: src, dstUrl: dst)
+    let configuration = SwiftyGumConfiguration(minHeight: minHeight, simBoder: simBorder)
+
+    let editScript = try! SwifityGumCore.exec(srcUrl: src, dstUrl: dst, configuration: configuration)
     printEditScript(editScript)
 
     let elapsed = Date().timeIntervalSince(start)

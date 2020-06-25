@@ -2,6 +2,9 @@ import Foundation
 
 struct RecoveryMatcher: Matcher {
 
+    public init(configuration: SwiftyGumConfiguration) {
+    }
+
     func match(src: Node, dst: Node, mappingStore: MappingStore) -> MappingStore {
         for srcChild in src.children {
             guard !mappingStore.isMatched(src: srcChild) else {

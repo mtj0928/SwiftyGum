@@ -4,7 +4,11 @@ import SwiftSyntax
 struct TopDownMathcher: Matcher {
 
     // 0 means that the node is a leaf.
-    let minHeight = 1
+    private let configuration: SwiftyGumConfiguration
+
+    public init(configuration: SwiftyGumConfiguration) {
+        self.configuration = configuration
+    }
 
     func match(src srcTree: Node, dst dstTree: Node, mappingStore: MappingStore) -> MappingStore {
         let dstLabelToNodes = createLabelToNodes(from: dstTree)
@@ -12,7 +16,7 @@ struct TopDownMathcher: Matcher {
         for srcNode in srcTree.descents.sorted(by: { $0.height >= $1.height }) {
             // When the parent node is matched, the node (included in the parent node's childlen) is matched.
             // So, skip the node.
-            guard srcNode.height >= minHeight,
+            guard srcNode.height >= configuration.minHeight,
                 !mappingStore.isMatched(src: srcNode),
                 let candidates = dstLabelToNodes[srcNode.label] else {
                 continue
