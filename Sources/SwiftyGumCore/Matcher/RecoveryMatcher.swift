@@ -19,6 +19,7 @@ struct RecoveryMatcher: Matcher {
                 }
 
                 if srcChild.label == dstChild.label {
+                    maxNode = maxNode ?? dstChild
                     let sim: Double
                     if srcChild.isLeaf && dstChild.isLeaf {
                         sim = srcChild.value == dstChild.value ? 1.0 : 0.5
