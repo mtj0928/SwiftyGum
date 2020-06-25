@@ -19,11 +19,13 @@ let main = command(
     )
 ) { src, dst, minHeight, simBorder in
     let start = Date()
+    do {
+        let configuration = SwiftyGumConfiguration(minHeight: minHeight, simBoder: simBorder)
 
-    let configuration = SwiftyGumConfiguration(minHeight: minHeight, simBoder: simBorder)
-
-    let editScript = try! SwifityGumCore.exec(srcUrl: src, dstUrl: dst, configuration: configuration)
-    printEditScript(editScript)
+        let editScript = try SwifityGumCore.exec(srcUrl: src, dstUrl: dst, configuration: configuration)
+        printEditScript(editScript)
+    } catch (_) {
+    }
 
     let elapsed = Date().timeIntervalSince(start)
     print("")
