@@ -4,7 +4,9 @@ This tool is a reimplementation of [GumTree](https://github.com/GumTreeDiff/gumt
 If you would like to konw the detail algorithem, read the [paper](https://hal.archives-ouvertes.fr/hal-01054552/document) which proposes GumTree.
 
 ## Build
-`$ swift build`
+```
+$ swift build
+```
 
 ## How To Use
 ```
@@ -37,6 +39,6 @@ Add the following to  your `.gitconfig`.
 ```
 
 You can execute SwiftyGum for edited swift files in your repository.  
-`
+```
 $ git difftool
-`
+```
