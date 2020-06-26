@@ -22,3 +22,21 @@ Options:
     --sim-border [default: 0.2] - The boundary value that determins two different node should be matched.
 
 ```
+
+## Git Integration
+Add the following to  your `.gitconfig`.
+```
+[diff]
+	tool = SwiftyGum
+
+[difftool "SwiftyGum"]
+	cmd = <The path of the executable on your system)> $LOCAL $REMOTE
+
+[difftool]
+	prompt = false
+```
+
+You can execute SwiftyGum for edited swift files in your repository.  
+`
+$ git difftool
+`
