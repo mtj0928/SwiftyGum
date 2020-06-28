@@ -24,7 +24,7 @@ let main = command(
 
         let editScript = try SwifityGumCore.exec(srcUrl: src, dstUrl: dst, configuration: configuration)
         printEditScript(editScript)
-    } catch (_) {
+    } catch _ {
     }
 
     let elapsed = Date().timeIntervalSince(start)

@@ -19,7 +19,7 @@ struct TopDownMathcher: Matcher {
             guard srcNode.height >= configuration.minHeight,
                 !mappingStore.isMatched(src: srcNode),
                 let candidates = dstLabelToNodes[srcNode.label] else {
-                continue
+                    continue
             }
 
             for candidate in candidates {

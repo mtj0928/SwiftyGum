@@ -1,7 +1,6 @@
 import Foundation
 import SwiftSyntax
 
-
 /// This struct is based on Chawathe's methodology.
 /// http://ilpubs.stanford.edu:8090/115/1/1995-46.pdf
 struct ChawatheScriptGenerator: EditScriptGenerator {

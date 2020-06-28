@@ -80,7 +80,7 @@ extension Node {
 
         var results = [Mapping]()
 
-        if (children.count != node.children.count) {
+        if children.count != node.children.count {
             return nil
         }
 
