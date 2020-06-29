@@ -20,12 +20,3 @@ class ListReporter: Reporter {
         }
     }
 }
-
-extension Node {
-    var string: String {
-        if let value = value {
-            return "\(label)(\(id)) (\"\(value)\")"
-        }
-        return "\(label)(\(id))"
-    }
-}

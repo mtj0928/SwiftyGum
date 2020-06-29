@@ -9,7 +9,7 @@ let main = command(
     Argument<URL>("dst",
                   description: "Destination file (editted file)"
     ),
-    Option<ReporterType>("report", default: .list, description: "Report format of EditScript"),
+    Option<ReporterType>("report", default: .cli, description: "Report format of EditScript"),
     Option<Int>("min-height",
                 default: SwiftyGumConfiguration.Default.minHeight,
                 description: "Minimum height that AST nodes are matched in TopDown Matching"
@@ -25,7 +25,8 @@ let main = command(
 
         let editScript = try SwifityGumCore.exec(srcUrl: src, dstUrl: dst, configuration: configuration)
         reportType.reporter.report(editScript)
-    } catch _ {
+    } catch let e {
+        print(e.localizedDescription)
     }
 
     let elapsed = Date().timeIntervalSince(start)
