@@ -6,7 +6,7 @@ import SwiftSyntax
 struct ChawatheScriptGenerator: EditScriptGenerator {
 
     /// Plese check the Figure 8 (Algorithm EditScript) in the paper.
-    func generate(from mappingStore: MappingStore) -> EditScript {
+    func generate(from mappingStore: MappingStore, srcSourceCode: SourceCode, dstSourceCode: SourceCode) -> EditScript {
         var actions = [EditAction]()
         var idToOriginalSrcNode = createIdToOtiginalNode(root: mappingStore.srcRootNode)
         let copiedMappingStore = copyMappingStore(from: mappingStore)
@@ -85,7 +85,7 @@ struct ChawatheScriptGenerator: EditScriptGenerator {
 
         copiedSrcRootNode.updateHeight()
         assert(copiedSrcRootNode.isomorphism(with: copiedDstRootNode) != nil)
-        return EditScript(actions: actions)
+        return EditScript(actions: actions, mappingStore: copiedMappingStore, srcSourceCode: srcSourceCode, dstSourceCode: dstSourceCode)
     }
 
     /// Plese check the Figure 9 (AlignChildren) in the paper.

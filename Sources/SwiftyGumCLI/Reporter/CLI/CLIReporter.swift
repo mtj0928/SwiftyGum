@@ -1,6 +1,7 @@
 import SwiftyGumCore
 import Darwin
 import Darwin.ncurses
+import SwiftSyntax
 
 class CLIReporter: Reporter {
     func report(_ editScript: EditScript) {
@@ -8,23 +9,66 @@ class CLIReporter: Reporter {
         guard ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0 else {
             return
         }
-        let width = w.ws_col != 0 ? w.ws_col : 120
+        // let width = w.ws_col != 0 ? w.ws_col : 120
+        let srcColorText = stringWithColorForSrc(of: editScript)
+        print(srcColorText.string)
 
-        editScript.actions.forEach { action in
-            printEditAction(action)
+        let dstColorText = stringWithColorForDst(of: editScript)
+        print(dstColorText.string)
+    }
+
+    private func stringWithColorForSrc(of editScript: EditScript) -> StringWithColor {
+        let actions = extractActionsForSrc(from: editScript)
+            .sorted(by: { $0.node.distanceFromRoot <= $1.node.distanceFromRoot })
+        var stringWithColor = StringWithColor(text: editScript.srcSourceCode.text)
+
+        let sourceCodeText = editScript.srcSourceCode.text
+        actions.forEach { action in
+            let range = sourceCodeText.index(sourceCodeText.startIndex, offsetBy: action.node.offSet)..<sourceCodeText.index(sourceCodeText.startIndex, offsetBy: action.node.offSet + action.node.length)
+            stringWithColor.append(ColorRange(range: range, color: action.color))
+        }
+
+        return stringWithColor
+    }
+
+    private func extractActionsForSrc(from editScript: EditScript) -> [EditAction] {
+        editScript.actions
+            .filter {
+                switch $0 {
+                case .insert(_, _, _):
+                    return false
+                default:
+                    return true
+                }
         }
     }
 
-    private func printEditAction(_ editAction: EditAction) {
-        switch editAction {
-        case .insert(let node, let to, let pos):
-            print("\(CLIColor.green("INS")): \(node.string)\tto\t\(to.string)\tat\t\(pos)")
-        case .delete(let node):
-            print("\(CLIColor.red("DEL")): \(node.string)")
-        case .update(let node, let newValue):
-            print("\(CLIColor.yellow("UPD")): \(node.string)\tto\t\"\(newValue ?? "nil")\"")
-        case .move(let node, let to, let pos):
-            print("\(CLIColor.magenta("MOV")): \(node.string)\tto\t\(to.string)\tat\t\(pos)")
+    private func stringWithColorForDst(of editScript: EditScript) -> StringWithColor {
+        let mappingStore = editScript.mappingStore
+        let actions = extractActionsForDst(from: editScript)
+            .sorted(by: { mappingStore.mathcedDstNode(with: $0.node)!.distanceFromRoot <= mappingStore.mathcedDstNode(with: $1.node)!.distanceFromRoot })
+
+        let sourceCodeText = editScript.dstSourceCode.text
+        var stringWithColor = StringWithColor(text: sourceCodeText)
+
+        actions.forEach { action in
+            let node = editScript.mappingStore.mathcedDstNode(with: action.node)!
+            let range = sourceCodeText.index(sourceCodeText.startIndex, offsetBy: node.offSet)..<sourceCodeText.index(sourceCodeText.startIndex, offsetBy: node.offSet + node.length)
+            stringWithColor.append(ColorRange(range: range, color: action.color))
+        }
+
+        return stringWithColor
+    }
+
+    private func extractActionsForDst(from editScript: EditScript) -> [EditAction] {
+        editScript.actions
+            .filter {
+                switch $0 {
+                case .delete(_):
+                    return false
+                default:
+                    return true
+                }
         }
     }
 }
@@ -36,4 +80,33 @@ extension Node {
         }
         return "\(label)(\(id))"
     }
+
+    fileprivate func contains(index: Int) -> Order {
+        if index < offSet {
+            return .previouse
+        } else if offSet <= index && index <= offSet + length {
+            return .contain
+        } else {
+            return .next
+        }
+    }
+}
+
+extension EditAction {
+    var color: CLIColor {
+        switch self {
+        case .insert:
+            return .green
+        case .delete:
+            return .red
+        case .move:
+            return .magenta
+        case .update:
+            return .yellow
+        }
+    }
+}
+
+private enum Order {
+    case previouse, contain, next
 }

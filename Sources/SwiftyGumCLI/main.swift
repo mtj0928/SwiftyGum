@@ -20,6 +20,9 @@ let main = command(
     )
 ) { src, dst, reportType, minHeight, simBorder in
     let start = Date()
+
+    print("--- \(src.path)")
+    print("+++ \(dst.path)\n")
     do {
         let configuration = SwiftyGumConfiguration(minHeight: minHeight, simBoder: simBorder)
 
@@ -30,8 +33,7 @@ let main = command(
     }
 
     let elapsed = Date().timeIntervalSince(start)
-    print("")
-    print("Time: \(elapsed)")
+    print("\nTime: \(elapsed)\n")
 }
 
 main.run()

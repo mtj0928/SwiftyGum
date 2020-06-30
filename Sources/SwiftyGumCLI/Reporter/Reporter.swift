@@ -26,7 +26,7 @@ enum ReporterType: String, ArgumentConvertible {
         case .list:
             return ListReporter()
         case .cli:
-            return CliReporter()
+            return CLIReporter()
         }
     }
 }
