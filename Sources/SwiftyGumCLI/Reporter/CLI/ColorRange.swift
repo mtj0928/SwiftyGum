@@ -9,7 +9,7 @@ struct CLIString {
 
     init(text: String) {
         self.text = text
-        colorRanges = [ColorRange.init(range: text.startIndex..<text.endIndex, color: .none)]
+        colorRanges = [ColorRange(range: text.startIndex..<text.endIndex, color: .none)]
     }
 
     mutating func append(_ newObject: ColorRange) {
@@ -74,12 +74,12 @@ struct CLIString {
                 }
                 let omittedText = lines.joined(separator: "\n")
                 text.replaceSubrange(colorRange.range, with: omittedText)
-                index += 1
             }
 
             if colorRange.color != .none {
                 text.insert(contentsOf: colorRange.color.rawValue, at: colorRange.range.lowerBound)
             }
+            index += 1
         }
         return text
     }

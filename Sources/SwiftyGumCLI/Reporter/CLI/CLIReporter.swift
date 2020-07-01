@@ -11,11 +11,11 @@ class CLIReporter: Reporter {
         }
         // let width = w.ws_col != 0 ? w.ws_col : 120
 
-        print("--- \(editScript.srcSourceCode.url.path)")
+        print(CLIColor.cyan.text("--- \(editScript.srcSourceCode.url.path)"))
         let srcColorText = stringWithColorForSrc(of: editScript)
         print(srcColorText.string)
 
-        print("+++ \(editScript.dstSourceCode.url.path)\n")
+        print(CLIColor.cyan.text("+++ \(editScript.dstSourceCode.url.path)"))
         let dstColorText = stringWithColorForDst(of: editScript)
         print(dstColorText.string)
     }
