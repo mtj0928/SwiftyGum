@@ -20,9 +20,6 @@ let main = command(
     )
 ) { src, dst, reportType, minHeight, simBorder in
     let start = Date()
-
-    print("--- \(src.path)")
-    print("+++ \(dst.path)\n")
     do {
         let configuration = SwiftyGumConfiguration(minHeight: minHeight, simBoder: simBorder)
 

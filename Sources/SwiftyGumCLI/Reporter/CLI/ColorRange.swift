@@ -3,9 +3,14 @@ struct ColorRange {
     let color: CLIColor
 }
 
-struct StringWithColor {
+struct CLIString {
     let text: String
     private(set) var colorRanges = [ColorRange]()
+
+    init(text: String) {
+        self.text = text
+        colorRanges = [ColorRange.init(range: text.startIndex..<text.endIndex, color: .none)]
+    }
 
     mutating func append(_ newObject: ColorRange) {
         defer {
@@ -48,9 +53,33 @@ struct StringWithColor {
     var string: String {
         var text = self.text
         let revesed = colorRanges.sorted(by: { $0.range.lowerBound <= $1.range.lowerBound && $0.range.upperBound <= $1.range.upperBound }).reversed()
+        var index = 0
         revesed.forEach { colorRange in
-            text.insert(contentsOf: CLIColor.close.rawValue, at: colorRange.range.upperBound)
-            text.insert(contentsOf: colorRange.color.rawValue, at: colorRange.range.lowerBound)
+            if colorRange.color != .none {
+                text.insert(contentsOf: CLIColor.none.rawValue, at: colorRange.range.upperBound)
+            }
+
+            // ommision for unedited text
+            if colorRange.color == .none {
+                let substring = text[colorRange.range]
+                var lines = [String]()
+                substring.enumerateLines { (line, stop) in lines.append(line) }
+
+                if index == 0 && lines.count >= 3 {
+                    lines = [lines[0], lines[1], lines[2]]
+                } else if index == colorRanges.count - 1 && lines.count >= 3 {
+                    lines = [lines[lines.count - 3], lines[lines.count - 2], lines[lines.count - 1]]
+                } else if lines.count >= 7 {
+                    lines = [lines[0], lines[1], lines[2], "~~~~~",lines[lines.count - 3], lines[lines.count - 2], lines[lines.count - 1]]
+                }
+                let omittedText = lines.joined(separator: "\n")
+                text.replaceSubrange(colorRange.range, with: omittedText)
+                index += 1
+            }
+
+            if colorRange.color != .none {
+                text.insert(contentsOf: colorRange.color.rawValue, at: colorRange.range.lowerBound)
+            }
         }
         return text
     }

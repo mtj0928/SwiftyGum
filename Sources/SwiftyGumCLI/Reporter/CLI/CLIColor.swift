@@ -10,9 +10,9 @@ enum CLIColor: String {
     case magenta = "\u{1b}[35m"
     case cyan = "\u{1b}[36m"
     case white = "\u{1b}[37m"
-    case close = "\u{1b}[0m"
+    case none = "\u{1b}[0m"
 
     func text(_ text: String) -> String {
-        "\(self.rawValue)\(text)\(CLIColor.close.rawValue)"
+        "\(self.rawValue)\(text)\(CLIColor.none.rawValue)"
     }
 }

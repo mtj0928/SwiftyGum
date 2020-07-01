@@ -10,17 +10,25 @@ class CLIReporter: Reporter {
             return
         }
         // let width = w.ws_col != 0 ? w.ws_col : 120
+
+        print("--- \(editScript.srcSourceCode.url.path)")
         let srcColorText = stringWithColorForSrc(of: editScript)
         print(srcColorText.string)
 
+        print("+++ \(editScript.dstSourceCode.url.path)\n")
         let dstColorText = stringWithColorForDst(of: editScript)
         print(dstColorText.string)
     }
 
-    private func stringWithColorForSrc(of editScript: EditScript) -> StringWithColor {
+    private func stringWithColorForSrc(of editScript: EditScript) -> CLIString {
         let actions = extractActionsForSrc(from: editScript)
             .sorted(by: { $0.node.distanceFromRoot <= $1.node.distanceFromRoot })
-        var stringWithColor = StringWithColor(text: editScript.srcSourceCode.text)
+
+        guard !actions.isEmpty else {
+            return CLIString(text: "")
+        }
+
+        var stringWithColor = CLIString(text: editScript.srcSourceCode.text)
 
         let sourceCodeText = editScript.srcSourceCode.text
         actions.forEach { action in
@@ -43,13 +51,17 @@ class CLIReporter: Reporter {
         }
     }
 
-    private func stringWithColorForDst(of editScript: EditScript) -> StringWithColor {
+    private func stringWithColorForDst(of editScript: EditScript) -> CLIString {
         let mappingStore = editScript.mappingStore
         let actions = extractActionsForDst(from: editScript)
             .sorted(by: { mappingStore.mathcedDstNode(with: $0.node)!.distanceFromRoot <= mappingStore.mathcedDstNode(with: $1.node)!.distanceFromRoot })
 
+        guard !actions.isEmpty else {
+            return CLIString(text: "")
+        }
+
         let sourceCodeText = editScript.dstSourceCode.text
-        var stringWithColor = StringWithColor(text: sourceCodeText)
+        var stringWithColor = CLIString(text: sourceCodeText)
 
         actions.forEach { action in
             let node = editScript.mappingStore.mathcedDstNode(with: action.node)!
