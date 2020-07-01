@@ -48,7 +48,14 @@ extension Node: Hashable {
 
 extension Node {
 
-    var posionInParent: Int? {
+    public var offSet: Int {
+        return original!.position.utf8Offset
+    }
+    public var length: Int {
+        return original!.totalLength.utf8Length
+    }
+
+    public var posionInParent: Int? {
         return parent?.children.firstIndex(of: self)
     }
 
@@ -80,7 +87,7 @@ extension Node {
 
         var results = [Mapping]()
 
-        if (children.count != node.children.count) {
+        if children.count != node.children.count {
             return nil
         }
 
