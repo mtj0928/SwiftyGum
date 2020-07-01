@@ -1,10 +1,3 @@
-//
-//  SwiftyGumConfiguration.swift
-//  SwiftyGumCore
-//
-//  Created by 松本淳之介 on 2020/06/25.
-//
-
 import Foundation
 
 public struct SwiftyGumConfiguration {
@@ -15,10 +8,10 @@ public struct SwiftyGumConfiguration {
     }
 
     public let minHeight: Int
-    public let simBoder: Double
+    public let simBorder: Double
 
-    public init(minHeight: Int, simBoder: Double) {
+    public init(minHeight: Int = Default.minHeight, simBorder: Double = Default.simBorder) {
         self.minHeight = minHeight
-        self.simBoder = simBoder
+        self.simBorder = simBorder
     }
 }

@@ -28,7 +28,9 @@ let package = Package(
         ),
         .testTarget(
             name: "SwiftyGumTests",
-            dependencies: ["SwiftyGumCore"]),
+            dependencies: [
+                "SwiftyGumCore"
+        ]),
     ],
     swiftLanguageVersions: [.v5]
 )

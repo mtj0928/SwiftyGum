@@ -26,7 +26,7 @@ struct BottomUpMatcher: Matcher {
                     continue
                 }
                 let sim = similarity(node, candidate, mappingStore: mappingStore)
-                if sim > max && sim >= configuration.simBoder {
+                if sim > max && sim >= configuration.simBorder {
                     max = sim
                     maxNode = candidate
                 }

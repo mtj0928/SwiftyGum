@@ -1,7 +1,7 @@
 import Foundation
 import SwiftSyntax
 
-open class SwifityGumCore {
+open class SwiftyGumCore {
 
     public static func exec(srcUrl: URL, dstUrl: URL, configuration: SwiftyGumConfiguration) throws -> EditScript {
         guard srcUrl.pathExtension == "swift" && dstUrl.pathExtension == "swift" else {

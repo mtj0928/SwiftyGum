@@ -1,32 +1,19 @@
 import XCTest
+import SwiftyGumCore
 import class Foundation.Bundle
 
 final class SwiftyGumTests: XCTestCase {
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
 
-        // Some of the APIs that we use below are available in macOS 10.13 and above.
-        guard #available(macOS 10.13, *) else {
-            return
-        }
+    func testSample01() throws {
+        let projectRoot = productsDirectory.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let sampleDirectory = projectRoot.appendingPathComponent("Resources")
+            .appendingPathComponent("sample01")
+        let src = sampleDirectory.appendingPathComponent("Src.swift")
+        let dst = sampleDirectory.appendingPathComponent("Dst.swift")
+        let configuration = SwiftyGumConfiguration(simBorder: 0.1)
 
-        let fooBinary = productsDirectory.appendingPathComponent("SwiftyGum")
-
-        let process = Process()
-        process.executableURL = fooBinary
-
-        let pipe = Pipe()
-        process.standardOutput = pipe
-
-        try process.run()
-        process.waitUntilExit()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)
-
-        XCTAssertEqual(output, "Hello, world!\n")
+        let editScript = try SwiftyGumCore.exec(srcUrl: src, dstUrl: dst, configuration: configuration)
+        XCTAssertEqual(editScript.actions.count, 16)
     }
 
     /// Returns path to the built products directory.
@@ -42,6 +29,6 @@ final class SwiftyGumTests: XCTestCase {
     }
 
     static var allTests = [
-        ("testExample", testExample),
+        ("testSample01", testSample01),
     ]
 }
