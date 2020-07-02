@@ -20,10 +20,9 @@ let main = command(
     )
 ) { src, dst, reportType, minHeight, simBorder in
     let start = Date()
+    let configuration = SwiftyGumConfiguration(minHeight: minHeight, simBorder: simBorder)
     do {
-        let configuration = SwiftyGumConfiguration(minHeight: minHeight, simBoder: simBorder)
-
-        let editScript = try SwifityGumCore.exec(srcUrl: src, dstUrl: dst, configuration: configuration)
+        let editScript = try SwiftyGumCore.exec(srcUrl: src, dstUrl: dst, configuration: configuration)
         reportType.reporter.report(editScript)
     } catch let e {
         print(e.localizedDescription)

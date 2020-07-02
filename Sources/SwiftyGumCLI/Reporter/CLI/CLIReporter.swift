@@ -32,7 +32,7 @@ class CLIReporter: Reporter {
 
         let sourceCodeText = editScript.srcSourceCode.text
         actions.forEach { action in
-            let range = sourceCodeText.index(sourceCodeText.startIndex, offsetBy: action.node.offSet)..<sourceCodeText.index(sourceCodeText.startIndex, offsetBy: action.node.offSet + action.node.length)
+            let range = sourceCodeText.index(sourceCodeText.startIndex, offsetBy: action.node.offSet)..<sourceCodeText.index(sourceCodeText.startIndex, offsetBy: min(action.node.offSet + action.node.length, sourceCodeText.count))
             stringWithColor.append(ColorRange(range: range, color: action.color))
         }
 
@@ -65,7 +65,7 @@ class CLIReporter: Reporter {
 
         actions.forEach { action in
             let node = editScript.mappingStore.mathcedDstNode(with: action.node)!
-            let range = sourceCodeText.index(sourceCodeText.startIndex, offsetBy: node.offSet)..<sourceCodeText.index(sourceCodeText.startIndex, offsetBy: node.offSet + node.length)
+            let range = sourceCodeText.index(sourceCodeText.startIndex, offsetBy: node.offSet)..<sourceCodeText.index(sourceCodeText.startIndex, offsetBy: min(node.offSet + node.length, sourceCodeText.count))
             stringWithColor.append(ColorRange(range: range, color: action.color))
         }
 
