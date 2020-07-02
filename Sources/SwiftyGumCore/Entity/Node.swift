@@ -49,10 +49,10 @@ extension Node: Hashable {
 extension Node {
 
     public var offSet: Int {
-        return original!.position.utf8Offset
+        return original!.positionAfterSkippingLeadingTrivia.utf8Offset
     }
     public var length: Int {
-        return original!.totalLength.utf8Length
+        return original!.contentLength.utf8Length
     }
 
     public var posionInParent: Int? {
