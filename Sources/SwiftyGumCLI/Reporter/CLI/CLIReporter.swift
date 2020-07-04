@@ -2,6 +2,7 @@ import SwiftyGumCore
 import Darwin
 import Darwin.ncurses
 import SwiftSyntax
+import Foundation
 
 class CLIReporter: Reporter {
     func report(_ editScript: EditScript) {
@@ -25,14 +26,14 @@ class CLIReporter: Reporter {
             .sorted(by: { $0.node.distanceFromRoot <= $1.node.distanceFromRoot })
 
         guard !actions.isEmpty else {
-            return CLIString(text: "")
+            return CLIString(text: "".utf8)
         }
 
-        var stringWithColor = CLIString(text: editScript.srcSourceCode.text)
+        let sourceCodeText = editScript.srcSourceCode.text.utf8
+        var stringWithColor = CLIString(text: sourceCodeText)
 
-        let sourceCodeText = editScript.srcSourceCode.text
         actions.forEach { action in
-            let range = sourceCodeText.index(sourceCodeText.startIndex, offsetBy: action.node.offSet)..<sourceCodeText.index(sourceCodeText.startIndex, offsetBy: min(action.node.offSet + action.node.length, sourceCodeText.count))
+            let range = action.node.offSet..<(action.node.offSet + action.node.length)
             stringWithColor.append(ColorRange(range: range, color: action.color))
         }
 
@@ -57,15 +58,17 @@ class CLIReporter: Reporter {
             .sorted(by: { mappingStore.mathcedDstNode(with: $0.node)!.distanceFromRoot <= mappingStore.mathcedDstNode(with: $1.node)!.distanceFromRoot })
 
         guard !actions.isEmpty else {
-            return CLIString(text: "")
+            return CLIString(text: "".utf8)
         }
 
-        let sourceCodeText = editScript.dstSourceCode.text
+        let sourceCodeText = editScript.dstSourceCode.text.utf8
         var stringWithColor = CLIString(text: sourceCodeText)
 
         actions.forEach { action in
-            let node = editScript.mappingStore.mathcedDstNode(with: action.node)!
-            let range = sourceCodeText.index(sourceCodeText.startIndex, offsetBy: node.offSet)..<sourceCodeText.index(sourceCodeText.startIndex, offsetBy: min(node.offSet + node.length, sourceCodeText.count))
+            guard let node = editScript.mappingStore.mathcedDstNode(with: action.node) else {
+                return
+            }
+            let range = node.offSet ..< (node.offSet + node.length)
             stringWithColor.append(ColorRange(range: range, color: action.color))
         }
 
