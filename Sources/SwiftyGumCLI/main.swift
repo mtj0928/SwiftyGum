@@ -25,7 +25,14 @@ let main = command(
         let editScript = try SwiftyGumCore.exec(srcUrl: src, dstUrl: dst, configuration: configuration)
         reportType.reporter.report(editScript)
     } catch let e {
-        print(e.localizedDescription)
+        if let error = e as? SwiftGumError {
+            switch error {
+            case .isNotSwiftFile(let src, let dst):
+                Diff.exec(src: src, dst: dst)
+            }
+        } else {
+            print(e.localizedDescription)
+        }
     }
 
     let elapsed = Date().timeIntervalSince(start)
