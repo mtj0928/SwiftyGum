@@ -14,7 +14,7 @@ class Diff {
         """
         if type "colordiff" > /dev/null 2>&1; then
             diffcommand="diff"
-        elsw
+        else
             diffcommand="colordiff"
         fi
 
