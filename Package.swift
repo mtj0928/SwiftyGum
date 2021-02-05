@@ -7,7 +7,7 @@ let package = Package(
     name: "SwiftyGum",
     dependencies: [
         .package(url: "https://github.com/kylef/Commander.git", from: "0.0.0"),
-        .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50200.0")),
+        .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50300.0")),
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
     ],
     targets: [
